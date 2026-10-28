@@ -68,9 +68,11 @@ logging.basicConfig(
 log = logging.getLogger("dtsms.server")
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+_public_dir = os.path.join(ROOT_DIR, "public")
+STATIC_DIR = _public_dir if os.path.isdir(_public_dir) else ROOT_DIR
 
 # ── Flask Application ────────────────────────────────────────────────
-app = Flask(__name__, static_folder=ROOT_DIR)
+app = Flask(__name__, static_folder=STATIC_DIR)
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0  # always revalidate front-end files
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -505,7 +507,20 @@ def get_iso_timestamp() -> str:
 
 @app.route("/")
 def serve_index():
-    return send_from_directory(ROOT_DIR, "index.html")
+    return send_from_directory(STATIC_DIR, "index.html")
+
+
+@app.route("/api", methods=["GET"])
+@app.route("/api/", methods=["GET"])
+@app.route("/api/index", methods=["GET"])
+@app.route("/api/index.py", methods=["GET"])
+def api_root():
+    return jsonify({
+        "status": "ok",
+        "service": "DTSMS API",
+        "version": "1.0",
+        "endpoints": ["/api/health", "/api/junctions", "/api/signal/schedule", "/api/sql/dashboard"]
+    })
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -2425,19 +2440,19 @@ def api_pipeline_test():
 @app.route("/about")
 def serve_spa_page():
     """Serves the single-page application for all frontend views."""
-    return send_from_directory(ROOT_DIR, "index.html")
+    return send_from_directory(STATIC_DIR, "index.html")
 
 
 @app.route("/<path:fname>")
 def serve_static(fname):
     """Serves static assets or falls back to index.html for SPA sub-routes."""
-    target = os.path.abspath(os.path.join(ROOT_DIR, fname))
+    target = os.path.abspath(os.path.join(STATIC_DIR, fname))
     parts = fname.replace("\\", "/").split("/")
     if parts[0] == "backend" or any(p.startswith(".") for p in parts):   # server code, .env secrets, SQL files
         return jsonify({"error": "Not found"}), 404
     if os.path.exists(target) and os.path.isfile(target):
-        return send_from_directory(ROOT_DIR, fname)
-    return send_from_directory(ROOT_DIR, "index.html")
+        return send_from_directory(STATIC_DIR, fname)
+    return send_from_directory(STATIC_DIR, "index.html")
 
 
 # ═══════════════════════════════════════════════════════════════════════
