@@ -80,7 +80,18 @@ except Exception as _init_err:
     log.warning(f"[MySQL] init_db warning (non-fatal): {_init_err}")
 
 # ── Metadata Persistence File ────────────────────────────────────────
-META_FILE = Path(__file__).parent / "metadata.json"
+_DEFAULT_META_FILE = Path(__file__).parent / "metadata.json"
+if os.environ.get("VERCEL") or not os.access(_DEFAULT_META_FILE.parent, os.W_OK):
+    import tempfile
+    import shutil
+    META_FILE = Path(tempfile.gettempdir()) / "metadata.json"
+    if _DEFAULT_META_FILE.exists() and not META_FILE.exists():
+        try:
+            shutil.copyfile(str(_DEFAULT_META_FILE), str(META_FILE))
+        except Exception:
+            pass
+else:
+    META_FILE = _DEFAULT_META_FILE
 
 # ── Pipeline Job State (in-memory, thread-safe) ───────────────────────
 # Tracks the current/last pipeline run status for status-polling by the frontend.

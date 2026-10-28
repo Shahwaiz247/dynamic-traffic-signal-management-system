@@ -1,0 +1,11 @@
+unins000.exe
+unins000.dat
+__pycache__
+*.pyc
+.git
+.gitignore
+install.cmd
+install.ps1
+start.cmd
+start.ps1
+tools/hdfs/setup_wsl_hdfs.sh

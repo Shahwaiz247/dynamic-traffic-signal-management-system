@@ -8,12 +8,26 @@ executemany / fetch* / commit / rollback / close, cursor(dictionary=True))
 and rewrites the handful of MySQL-only SQL constructs on the fly.
 """
 
+import os
 import re
 import sqlite3
 import threading
+import tempfile
+import shutil
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "traffic_management.sqlite3"
+_SRC_DB_PATH = Path(__file__).parent / "traffic_management.sqlite3"
+if os.environ.get("VERCEL") or not os.access(_SRC_DB_PATH.parent, os.W_OK):
+    _TMP_DB = Path(tempfile.gettempdir()) / "traffic_management.sqlite3"
+    if _SRC_DB_PATH.exists() and not _TMP_DB.exists():
+        try:
+            shutil.copyfile(str(_SRC_DB_PATH), str(_TMP_DB))
+        except Exception:
+            pass
+    DB_PATH = _TMP_DB if _TMP_DB.exists() else _SRC_DB_PATH
+else:
+    DB_PATH = _SRC_DB_PATH
+
 DB_NAME = "traffic_management (embedded SQLite)"
 
 Error = sqlite3.Error
@@ -120,8 +134,11 @@ class Cursor:
 class Connection:
     def __init__(self):
         self._conn = sqlite3.connect(str(DB_PATH), timeout=30, check_same_thread=False)
-        self._conn.execute("PRAGMA journal_mode=WAL")
-        self._conn.execute("PRAGMA synchronous=NORMAL")
+        try:
+            self._conn.execute("PRAGMA journal_mode=WAL")
+            self._conn.execute("PRAGMA synchronous=NORMAL")
+        except Exception:
+            pass
         self._conn.create_function("HOUR", 1, _hour, deterministic=True)
         self._conn.create_function("DATABASE", 0, lambda: DB_NAME)
 

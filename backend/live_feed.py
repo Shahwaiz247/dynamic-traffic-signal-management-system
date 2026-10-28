@@ -92,17 +92,20 @@ def process_minutes() -> int:
 
 def _set_env(name: str, value: str) -> None:
     os.environ[name] = value
-    lines = ENV_FILE.read_text(encoding="utf-8").splitlines() if ENV_FILE.exists() else []
-    out, found = [], False
-    for line in lines:
-        if line.startswith(f"{name}="):
+    try:
+        lines = ENV_FILE.read_text(encoding="utf-8").splitlines() if ENV_FILE.exists() else []
+        out, found = [], False
+        for line in lines:
+            if line.startswith(f"{name}="):
+                out.append(f"{name}={value}")
+                found = True
+            else:
+                out.append(line)
+        if not found:
             out.append(f"{name}={value}")
-            found = True
-        else:
-            out.append(line)
-    if not found:
-        out.append(f"{name}={value}")
-    ENV_FILE.write_text("\n".join(out) + "\n", encoding="utf-8")
+        ENV_FILE.write_text("\n".join(out) + "\n", encoding="utf-8")
+    except Exception:
+        pass
 
 
 def save_config(key: Optional[str] = None, enabled: Optional[bool] = None) -> None:

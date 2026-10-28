@@ -351,8 +351,12 @@ class PySparkTrafficPipeline:
         # A new file name per run: the session outlives runs, and Spark's cache matches plans by path,
         # so re-reading a fixed path returned the previous dataset.
         spark.catalog.clearCache()
-        stage_dir = Path(__file__).parent / "mock_hdfs" / "traffic" / "staging"
-        stage_dir.mkdir(parents=True, exist_ok=True)
+        import hadoop_layer
+        stage_dir = hadoop_layer.DEV_MOCK_STORAGE_DIR / "traffic" / "staging"
+        try:
+            stage_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
         for old in stage_dir.glob("spark_input*.csv"):
             try:
                 old.unlink()
@@ -575,8 +579,12 @@ class PySparkTrafficPipeline:
                                      "vehicle_count": int(ha["cnt"]), "avg_speed": spd, "density_vpm": dens,
                                      "congestion": get_congestion_level(dens, spd), "collisions": int(ha["col"])})
 
-        processed_dir = Path(__file__).parent / "mock_hdfs" / "traffic" / "processed"
-        processed_dir.mkdir(parents=True, exist_ok=True)
+        import hadoop_layer
+        processed_dir = hadoop_layer.DEV_MOCK_STORAGE_DIR / "traffic" / "processed"
+        try:
+            processed_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
         ts_slug = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         c = counters
         result = {
