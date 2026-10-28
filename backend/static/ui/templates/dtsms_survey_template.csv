@@ -1,0 +1,19 @@
+Date,Time,Location,Direction,To,Vehicle_Type,Vehicle_Count,Speed_kmph
+2026-10-19,08:00,Palayam,Road A,Straight,Motorcycle,214,24
+2026-10-19,08:00,Palayam,Road A,Straight,Car,96,21
+2026-10-19,08:00,Palayam,Road A,Left,Auto Rickshaw,41,19
+2026-10-19,08:00,Palayam,Road A,Right,Bus,9,16
+2026-10-19,08:00,Palayam,Road B,Road D,Motorcycle,132,26
+2026-10-19,08:00,Palayam,Road B,Road C,Car,47,22
+2026-10-19,08:00,Palayam,Road B,Road A,Auto Rickshaw,28,20
+2026-10-19,08:00,Palayam,Road C,Straight,Motorcycle,188,23
+2026-10-19,08:00,Palayam,Road C,Straight,Car,85,20
+2026-10-19,08:00,Palayam,Road C,Left,Truck,6,15
+2026-10-19,08:00,Palayam,Road C,Right,Auto Rickshaw,33,18
+2026-10-19,08:00,Palayam,Road D,Straight,Motorcycle,77,25
+2026-10-19,08:00,Palayam,Road D,Left,Car,30,21
+2026-10-19,08:00,Palayam,Road D,,Bus,7,17
+2026-10-19,09:00,Palayam,Road A,Straight,Motorcycle,231,22
+2026-10-19,09:00,Palayam,Road A,Right,Car,38,19
+2026-10-19,09:00,Pattom,North,Straight,Motorcycle,152,27
+2026-10-19,09:00,Pattom,East,Left,Car,44,23

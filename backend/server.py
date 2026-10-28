@@ -67,9 +67,21 @@ logging.basicConfig(
 )
 log = logging.getLogger("dtsms.server")
 
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-_public_dir = os.path.join(ROOT_DIR, "public")
-STATIC_DIR = _public_dir if os.path.isdir(_public_dir) else ROOT_DIR
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+for candidate in [
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "public"),
+    os.path.join(BASE_DIR, "..", "public"),
+    os.path.join(BASE_DIR, ".."),
+    BASE_DIR
+]:
+    if os.path.exists(os.path.join(candidate, "index.html")):
+        STATIC_DIR = os.path.abspath(candidate)
+        break
+else:
+    STATIC_DIR = BASE_DIR
+
+ROOT_DIR = STATIC_DIR
 
 # ── Flask Application ────────────────────────────────────────────────
 app = Flask(__name__, static_folder=STATIC_DIR)

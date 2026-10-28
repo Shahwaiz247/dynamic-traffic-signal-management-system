@@ -1,0 +1,25 @@
+{
+  "project": "DTSMS — Dynamic Traffic Signal Management System",
+  "subtitle": "Big data mini project · Thiruvananthapuram",
+  "institution": "Your college name · Department of Data Science",
+  "guide": "Project guide: Prof. Your Guide",
+  "team": [
+    { "name": "Albin M George", "role": "Big Data Analytics Lead" },
+    { "name": "Aneesha S", "role": "Dashboard Developer" },
+    { "name": "Fathima Nazrin", "role": "Integration and Testing Lead" },
+    { "name": "Mitha Suman", "role": "Data Preprocessing Lead" },
+    { "name": "Shahwaiz Muhammed", "role": "Data Collection and Documentation Lead" }
+  ],
+  "acknowledgements": [
+    { "name": "OpenStreetMap contributors", "what": "Roads, junction geometry and building footprints (ODbL)", "url": "https://www.openstreetmap.org/copyright" },
+    { "name": "OpenFreeMap", "what": "Vector map tiles and styles", "url": "https://openfreemap.org" },
+    { "name": "Esri World Imagery", "what": "Satellite map layer", "url": "https://www.esri.com" },
+    { "name": "MapLibre GL JS", "what": "Map rendering", "url": "https://maplibre.org" },
+    { "name": "Three.js", "what": "3D junction", "url": "https://threejs.org" },
+    { "name": "Chart.js", "what": "Charts", "url": "https://www.chartjs.org" },
+    { "name": "Apache Spark / PySpark", "what": "Distributed processing of the survey data", "url": "https://spark.apache.org" },
+    { "name": "Apache Hadoop (HDFS model)", "what": "Storage layer", "url": "https://hadoop.apache.org" },
+    { "name": "Flask", "what": "Backend API", "url": "https://flask.palletsprojects.com" },
+    { "name": "Webster (1958)", "what": "Optimum cycle and green split method for fixed-time signals", "url": "" }
+  ]
+}

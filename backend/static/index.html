@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DTSMS — Signal planning, Thiruvananthapuram</title>
+  <meta name="description" content="Weekly traffic surveys → Hadoop HDFS → Apache Spark → SQL → a signal timetable for 47 junctions in Thiruvananthapuram district."/>
+  <meta name="theme-color" content="#1c1e21"/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f2c230'/%3E%3Cg fill='%231c1e21'%3E%3Crect x='6.5' y='6' width='3' height='14'/%3E%3Crect x='12' y='6' width='3' height='14'/%3E%3Crect x='17.5' y='6' width='3' height='14'/%3E%3Crect x='23' y='6' width='3' height='14'/%3E%3Crect x='6' y='23.5' width='20' height='2.6'/%3E%3C/g%3E%3C/svg%3E"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;500;600;700;800&family=Overpass+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/ui/app.css"/>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <header class="road">
+    <div class="road-top">
+      <a class="brand" href="#/overview" aria-label="DTSMS home">
+        <span id="brandMark"></span>
+        <span class="wordmark">DTSMS<small>Signal planning · Thiruvananthapuram</small></span>
+      </a>
+      <label class="jn-pick"><span>Junction</span><select id="jnSel" aria-label="Junction"></select></label>
+      <span class="status" id="pipePill"><span class="dot" id="pipeDot"></span><span id="pipeText">Pipeline idle</span></span>
+      <button class="btn primary" id="simulateBtn" aria-label="Run simulation"><span data-icon="play" data-size="14"></span><span class="lbl">Run simulation</span></button>
+    </div>
+    <nav class="nav" id="nav" aria-label="Pages">
+      <a href="#/overview" data-page="overview"><span data-icon="overview"></span>Overview</a>
+      <a href="#/schedule" data-page="schedule"><span data-icon="schedule"></span>Signal schedule</a>
+      <a href="#/map" data-page="map"><span data-icon="map"></span>Map</a>
+      <a href="#/junction" data-page="junction"><span data-icon="junction3d"></span>Junction 3D</a>
+      <a href="#/data" data-page="data"><span data-icon="data"></span>Data &amp; pipeline</a>
+      <a href="#/analytics" data-page="analytics"><span data-icon="analytics"></span>Analytics</a>
+      <span class="nav-gap"></span>
+      <a href="#/settings" data-page="settings"><span data-icon="settings"></span>Settings</a>
+      <a href="#/credits" data-page="credits"><span data-icon="credits"></span>Credits</a>
+    </nav>
+  </header>
+
+  <div class="content" id="frame">
+    <div class="page-head">
+      <div><h1 id="pageTitle">Overview</h1><p class="lede" id="pageSub"></p></div>
+      <div class="aside" id="pageAside"></div>
+    </div>
+    <main id="view"></main>
+  </div>
+  <footer class="foot"><span class="dot" id="footDot"></span><span id="footStatus">Connecting…</span>
+    <span style="margin-left:auto">Map data © OpenStreetMap contributors · OpenFreeMap</span></footer>
+
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <script type="module" src="/ui/app.js"></script>
+</body>
+</html>
