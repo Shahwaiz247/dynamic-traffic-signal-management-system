@@ -522,26 +522,16 @@ def serve_index():
     return send_from_directory(STATIC_DIR, "index.html")
 
 
-@app.route("/api/debug-files", methods=["GET"])
-def api_debug_files():
-    import os
-    cur = os.path.abspath(".")
-    root = os.path.abspath(ROOT_DIR)
-    static = os.path.abspath(STATIC_DIR)
-    def ls(p):
-        try:
-            return os.listdir(p)
-        except Exception as e:
-            return str(e)
+@app.route("/api", methods=["GET"])
+@app.route("/api/", methods=["GET"])
+@app.route("/api/index", methods=["GET"])
+@app.route("/api/index.py", methods=["GET"])
+def api_root():
     return jsonify({
-        "cwd": cur,
-        "root_dir": root,
-        "static_dir": static,
-        "cwd_files": ls(cur),
-        "root_files": ls(root),
-        "static_files": ls(static),
-        "server_py_dir": os.path.dirname(__file__),
-        "server_py_dir_files": ls(os.path.dirname(__file__))
+        "status": "ok",
+        "service": "DTSMS API",
+        "version": "1.0",
+        "endpoints": ["/api/health", "/api/junctions", "/api/signal/schedule", "/api/sql/dashboard"]
     })
 
 
