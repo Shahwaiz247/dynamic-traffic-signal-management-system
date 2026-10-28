@@ -67,8 +67,10 @@ logging.basicConfig(
 )
 log = logging.getLogger("dtsms.server")
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
 # ── Flask Application ────────────────────────────────────────────────
-app = Flask(__name__, static_folder="..")
+app = Flask(__name__, static_folder=ROOT_DIR)
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0  # always revalidate front-end files
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -503,7 +505,7 @@ def get_iso_timestamp() -> str:
 
 @app.route("/")
 def serve_index():
-    return send_from_directory("..", "index.html")
+    return send_from_directory(ROOT_DIR, "index.html")
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -2412,7 +2414,6 @@ def api_pipeline_test():
 #  SPA & STATIC ASSET SERVING
 # ═══════════════════════════════════════════════════════════════════════
 
-@app.route("/")
 @app.route("/dashboard")
 @app.route("/upload")
 @app.route("/processing")
@@ -2424,20 +2425,19 @@ def api_pipeline_test():
 @app.route("/about")
 def serve_spa_page():
     """Serves the single-page application for all frontend views."""
-    return send_from_directory("..", "index.html")
+    return send_from_directory(ROOT_DIR, "index.html")
 
 
 @app.route("/<path:fname>")
 def serve_static(fname):
     """Serves static assets or falls back to index.html for SPA sub-routes."""
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    target = os.path.abspath(os.path.join(base_dir, fname))
+    target = os.path.abspath(os.path.join(ROOT_DIR, fname))
     parts = fname.replace("\\", "/").split("/")
     if parts[0] == "backend" or any(p.startswith(".") for p in parts):   # server code, .env secrets, SQL files
         return jsonify({"error": "Not found"}), 404
     if os.path.exists(target) and os.path.isfile(target):
-        return send_from_directory("..", fname)
-    return send_from_directory("..", "index.html")
+        return send_from_directory(ROOT_DIR, fname)
+    return send_from_directory(ROOT_DIR, "index.html")
 
 
 # ═══════════════════════════════════════════════════════════════════════

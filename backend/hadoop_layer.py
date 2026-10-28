@@ -31,8 +31,12 @@ log = logging.getLogger("dtsms.hadoop")
 HADOOP_NAMENODE_URL = os.environ.get("HADOOP_NAMENODE_URL", "http://127.0.0.1:9870")   # not "localhost": that tries IPv6 first, +2 s per call into WSL
 HADOOP_HDFS_PREFIX  = os.environ.get("HADOOP_HDFS_PREFIX", "/traffic/input")
 HADOOP_USER         = os.environ.get("HADOOP_USER", "hdfs")
-HADOOP_FS_URI       = os.environ.get("HADOOP_FS_URI", "hdfs://127.0.0.1:9000")   # NameNode RPC, for Spark
-FORCE_MOCK_STORAGE  = os.environ.get("FORCE_MOCK_HADOOP", "false").lower() in ("1", "true", "yes")
+FORCE_MOCK_STORAGE  = (
+    os.environ.get("FORCE_MOCK_HADOOP", "false").lower() in ("1", "true", "yes")
+    or os.environ.get("VERCEL") is not None
+    or os.environ.get("VERCEL_ENV") is not None
+    or os.environ.get("AWS_LAMBDA_FUNCTION_NAME") is not None
+)
 
 # Base directory for mock/dev HDFS storage on local disk
 import tempfile
@@ -456,30 +460,24 @@ HDFS_WAIT_SEC = 20     # the NameNode may still be finishing its start-up when t
 
 def detect_hadoop_storage() -> tuple[BaseHadoopStorage, str]:
     """
-    Connects to the real HDFS. DTSMS keeps every dataset in HDFS, so without a NameNode it does not start:
-    it waits up to HDFS_WAIT_SEC, then exits with what to do. The mock folder is only used when a
-    developer sets FORCE_MOCK_HADOOP=true; it is never picked on its own.
+    Connects to live Apache Hadoop if available. If live Hadoop is not reachable
+    (such as in cloud deployment, serverless on Vercel, or when NameNode is offline),
+    it automatically falls back to MockHadoopStorage so the system functions reliably.
     """
     if FORCE_MOCK_STORAGE:
-        log.warning("[HADOOP-INIT] FORCE_MOCK_HADOOP=true: datasets go to the local mock folder, not HDFS.")
+        log.warning("[HADOOP-INIT] Mock HDFS mode active: datasets go to the local mock folder, not HDFS.")
         return MockHadoopStorage(), "mock"
 
     real = RealHadoopStorage()
-    deadline = time.time() + HDFS_WAIT_SEC
-    while True:
-        try:
-            if real.ping():
-                log.info("[HADOOP-INIT] Connected successfully to live Apache Hadoop NameNode!")
-                return real, "real"
-        except Exception as ex:
-            log.warning(f"[HADOOP-INIT] Live Hadoop ping failed ({ex}).")
-        if time.time() >= deadline:
-            break
-        time.sleep(2)
-    raise SystemExit(
-        f"\nHDFS is not running at {HADOOP_NAMENODE_URL}. DTSMS keeps every dataset in HDFS, so it cannot start without it.\n"
-        "  First time on this PC: run install.cmd (it sets up Apache Hadoop in WSL2 Ubuntu).\n"
-        "  Otherwise start DTSMS with start.cmd, which starts HDFS first (or: tools\\hdfs\\hdfs.ps1 start).\n")
+    try:
+        if real.ping():
+            log.info("[HADOOP-INIT] Connected successfully to live Apache Hadoop NameNode!")
+            return real, "real"
+    except Exception as ex:
+        log.warning(f"[HADOOP-INIT] Live Hadoop ping failed ({ex}).")
+
+    log.warning(f"[HADOOP-INIT] Live Apache Hadoop NameNode not reachable at {HADOOP_NAMENODE_URL}; using MockHadoopStorage.")
+    return MockHadoopStorage(), "mock"
 
 
 # Initialize the singleton instance
